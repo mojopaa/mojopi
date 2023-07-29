@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!--reference: https://codepen.io/shantikumarsingh/pen/RRmWxo-->
+  <!-- 引入Materialize CSS的样式表 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/toastui-editor.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/toastui-editor-viewer.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  <!-- 可选：如果需要使用Material Icons图标字体，请引入下面这行 -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <title>Profile</title>
+</head>
+
+<body>
+  {% include 'navbar.html' %}
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m8 offset-m2">
+        <div class="card">
+          <div class="card-content">
+            <div class="content-wrapper">
+                            
+                <div>
+                  <h6>Username: {{ profile.user.username }}</h6>
+                  <h6>Education: {{ profile.education }}</h6>
+                  <h6>Experience: {{ profile.experience }}</h6>
+                </div>
+                            
+                <div class="row">
+                  <div class="col s12 m2">
+                        <div class="circle">
+                          <img class="profile-pic" src="{{ profile_pic_url }}">
+                        </div>
+                        <div class="p-image">
+                          <i class="material-icons upload-button">camera_alt</i>
+                          <input class="profile-pic-upload" type="file" accept="image/*">
+                        </div>
+                        
+                  </div>
+                </div> <!--div row end-->
+								
+
+								
+								
+              </div><!--content-wrapper end-->
+              {% if current_user == profile.user %}
+                 <div class="card-action">
+                      <a href="/edit_profile">
+                        <button class="btn waves-effect waves-light right" >Edit</button>
+                      </a>
+                 </div>
+              {% endif %}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Biography</span>
+            <hr />
+            <div id="viewer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 引入Materialize JavaScript文件 -->
+  <script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-3.7.0.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/toastui-editor-all.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/toastui-editor-viewer.js') }}"></script>
+  <script>
+    {% for message in get_flashed_messages() %}
+    M.toast({html: "{{ message }}"})
+    {% endfor %}
+  </script>
+  <script>
+    
+      const viewer = new toastui.Editor({
+          el: document.querySelector('#viewer'),
+          viewer: true,  // Enable viewer mode
+          initialValue: {{ profile.bio|tojson }}
+    });
+                                    
+  </script>
+  <script>
+	$(document).ready(function() {
+	  var readURL = function(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          $('.profile-pic').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+      }
+	  }
+
+	  $(".profile-pic-upload").on('change', function() {
+			readURL(this);
+
+			// 上傳圖片
+			var formData = new FormData();
+			formData.append('file', $(this)[0].files[0]);
+
+			$.ajax({
+			  url: '/files/profile_pic',
+			  type: 'POST',
+			  data: formData,
+			  processData: false,
+			  contentType: false,
+			  success: function(response) {
+				// M.toast({html: response.message});
+			  },
+			  error: function(xhr, status, error) {
+				var message = xhr.responseText || 'An error occurred.';
+				// M.toast({html: message}); 
+			  }
+			});
+	  });
+
+
+
+	  // 獲取圖片
+	  $.ajax({
+      url: '/files/profile_pic',
+      type: 'GET',
+      success: function(response) {
+        // $('.profile-pic').attr('src', response);
+      },
+      error: function(xhr, status, error) {
+        var message = xhr.responseText || 'An error occurred.';
+        // M.toast({html: message});
+      }
+	  });
+
+
+			$(".profile-pic-upload").on('change', function(){
+				readURL(this);
+			});
+			
+			$(".upload-button").on('click', function() {
+			   $(".profile-pic-upload").click();
+			});
+		});
+  </script>
+</body>
+
+</html>

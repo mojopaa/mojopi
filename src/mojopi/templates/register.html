@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- 引入Materialize CSS的樣式表 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  <!-- 可選：如果需要使用Material Icons圖示字體，請引入下面這行 -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <title>Register</title>
+</head>
+<body>
+  <!-- 在這裡添加您的內容 -->
+  {% include 'navbar.html' %}
+  
+  <div class="row">
+    <div class="col s12 m6 offset-m3">
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title">Register</span>
+          <div class="row">
+            <form class="col s12" action="{{ url_for('mbp.register') }}" method="POST">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="email" name="email" type="email" class="validate" onblur="checkEmailValidity()">
+                  <label for="email">Email</label>
+                </div>
+                <div id="email-validation-message" class="col s12"></div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="username" name="username" type="text" class="validate" onblur="checkUsernameValidity()">
+                  <label for="username">Username</label>
+                </div>
+                <div id="username-validation-message" class="col s12"></div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="password" name="password" type="password">
+                  <label for="password">Password</label>
+                </div>
+              </div>
+              <div class="row">
+                <!-- <button class="btn waves-effect waves-light" type="button" onclick="register()">Register</button> -->
+                <button class="btn waves-effect waves-light" type="submit" name="action">Register</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-3.7.0.js') }}"></script>
+  <script>
+    function checkEmailValidity() {
+      const emailInput = document.getElementById('email');
+      const emailValidationMessage = document.getElementById('email-validation-message');
+      const inputEmail = emailInput.value;
+
+      fetch(`/api/email/${inputEmail}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.valid) {
+            emailInput.classList.remove('invalid');
+            emailInput.classList.add('valid');
+            emailValidationMessage.innerHTML = '';
+          } else {
+            emailInput.classList.remove('valid');
+            emailInput.classList.add('invalid');
+            emailValidationMessage.innerHTML = 'Invalid email. Please enter a valid email.';
+          }
+        })
+        .catch(error => {
+          console.error('Error checking email validity:', error);
+          emailInput.classList.remove('valid');
+          emailInput.classList.add('invalid');
+          emailValidationMessage.innerHTML = 'Error checking email validity. Please try again later.';
+        });
+    }
+
+    function checkUsernameValidity() {
+      const usernameInput = document.getElementById('username');
+      const usernameValidationMessage = document.getElementById('username-validation-message');
+      const inputUsername = usernameInput.value;
+
+      fetch(`/api/username/${inputUsername}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.valid) {
+            usernameInput.classList.remove('invalid');
+            usernameInput.classList.add('valid');
+            usernameValidationMessage.innerHTML = '';
+          } else {
+            usernameInput.classList.remove('valid');
+            usernameInput.classList.add('invalid');
+            usernameValidationMessage.innerHTML = 'Invalid username. Please enter a different username.';
+          }
+        })
+        .catch(error => {
+          console.error('Error checking username validity:', error);
+          usernameInput.classList.remove('valid');
+          usernameInput.classList.add('invalid');
+          usernameValidationMessage.innerHTML = 'Error checking username validity. Please try again later.';
+        });
+    }
+
+    // function register() {
+    //   // Implement your registration logic here.
+    //   // You can submit the form or perform any additional validation as needed.
+    // }
+  </script>
+</body>
+</html>

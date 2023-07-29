@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- 引入Materialize CSS的樣式表 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  <!-- 可選：如果需要使用Material Icons圖示字體，請引入下面這行 -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <title>Mojo Package Index</title>
+</head>
+<body>
+  <!-- 在這裡添加您的內容 -->
+  {% include 'navbar.html' %}
+
+  {% if not current_user.is_authenticated %}
+  <div class="center-align"> <!-- This will center the button horizontally -->
+    <a id="register_button" class="waves-effect waves-light btn" href="/register">Register</a>
+  </div>
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-3.7.0.js') }}"></script>
+  <script>
+    {% for message in get_flashed_messages() %}
+    M.toast({html: "{{ message }}"})
+    {% endfor %}
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+.nav-wrapper {
+    background-color: #c300ff; /* 使用十六進位碼來設定為紅色 */
+  }
+
+.avatar-img-small {
+  width: 40px; /* 调整图像的宽度 */
+  height: 40px; /* 调整图像的高度 */
+  margin-top: 10px; /* 调整图像的上边距 */
+  margin-right: 10px; /* 调整图像的右边距 */
+}
+
+
+.circle {
+  position: relative;
+  /* 其他樣式... */
+}
+
+
+.p-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  /* 其他樣式... */
+}
+
+.profile-pic,
+.p-image {
+  position: relative;
+  width: 100px; /* 调整图像的宽度 */
+  height: 100px; /* 调整图像的高度 */
+  display: inline-block;
+}
+
+
+.content-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+
+.profile-pic-upload {
+    display: none;
+}
+
+.upload-button {
+  font-size: 1.2em;
+}
+
+.upload-button:hover {
+  transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+  color: #999;
+}
+
+#register_button {
+  position: absolute; /* This allows centering the button */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* This centers the button both horizontally and vertically */
+  /* Add more styles as needed */
+}

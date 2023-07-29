@@ -1,0 +1,35 @@
+Privacy Policy for Mojo Package Index
+
+Effective Date: 2023-05-30
+
+At Mojo Package Index, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you interact with our website and services. By using Mojo Package Index, you agree to the practices described in this policy. 
+
+1. Information We Collect:
+1.1 Personal Information: When you access or use our website, we may collect personal information that you voluntarily provide to us. This may include your name, email address, phone number, and any other information you choose to provide.
+1.2 Usage Information: We may collect non-personal information about your interactions with our website and services. This may include your IP address, browser type, device information, and other similar data.
+
+2. Use of Information:
+2.1 Personal Information: We may use the personal information we collect to provide you with the services you requested, respond to your inquiries, improve our website and services, and communicate with you about updates or promotions.
+2.2 Usage Information: We may use non-personal information for analytical purposes, to monitor and analyze trends, administer our website, and gather demographic information for aggregate use.
+
+3. Data Security:
+3.1 We employ industry-standard security measures to protect your personal information from unauthorized access, disclosure, alteration, or destruction.
+3.2 However, please note that no method of transmission over the Internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute security.
+
+4. Cookies and Tracking Technologies:
+4.1 We may use cookies, web beacons, and similar tracking technologies to enhance your experience on our website. These technologies help us collect and store information about your usage patterns, preferences, and browsing behavior.
+4.2 You can control cookies through your browser settings. However, disabling cookies may limit certain features or functionality of our website.
+
+5. Third-Party Links:
+5.1 Our website may contain links to third-party websites or services. We are not responsible for the privacy practices or the content of such websites. We encourage you to review the privacy policies of those third parties before providing any personal information.
+
+6. Children's Privacy:
+6.1 Our website and services are not intended for individuals under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected personal information from a child under 13, we will take steps to delete it promptly.
+
+7. Changes to this Privacy Policy:
+7.1 We reserve the right to update or modify this Privacy Policy at any time. Any changes will be effective upon posting the revised policy on our website. We encourage you to review this Privacy Policy periodically for any updates.
+
+8. Contact Us:
+8.1 If you have any questions, concerns, or requests regarding this Privacy Policy or the processing of your personal information, please contact us at eric@simutech.com.tw.
+
+By using Mojo Package Index, you acknowledge that you have read and understood this Privacy Policy and consent to the collection, use, and storage of your personal information as described herein.

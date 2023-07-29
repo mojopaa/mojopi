@@ -1,0 +1,57 @@
+<nav>
+    <div class="nav-wrapper">
+        <a href="/" class="brand-logo">Mojo Package Index</a>
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        <ul id="nav-mobile" class="right">
+            {% if admin_mode %}
+            <li><a href="/admin/">Admin</a></li>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <li>
+                <a class="dropdown-trigger" href="#" data-target="user-dropdown">
+                    <li><img src="{{ avatar }}" alt="User Avatar" class="circle avatar-img-small" /></li>
+                </a>
+            </li>
+            <ul id="user-dropdown" class="dropdown-content">
+                <!-- 下拉菜单选项 -->
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/settings">Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+            {% else %}
+            <li><a class="waves-effect waves-light btn" href="/login">Login<i class="material-icons right">person</i></a></li>
+            {% endif %}
+            
+            
+        </ul>
+    </div>
+</nav>
+
+<ul class="sidenav" id="mobile-demo">
+<li><a href="sass.html">Sass</a></li>
+<li><a href="badges.html">Components</a></li>
+<li><a href="collapsible.html">Javascript</a></li>
+<li><a href="mobile.html">Mobile</a></li>
+</ul>
+
+
+
+<!-- 引入Materialize JavaScript檔案 -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    //sidenav
+    var elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems);
+
+    //dropdown trigger
+    var dropdowns = document.querySelectorAll('.dropdown-trigger');
+    var dropdownOptions = {
+        // constrainWidth: false, // 不限制下拉菜单的宽度
+        coverTrigger: false
+        // 可选：设置其他选项
+    };
+    M.Dropdown.init(dropdowns, dropdownOptions);
+});
+</script>
