@@ -379,6 +379,7 @@ def project(project_name, version):
         "project.html",
         info=project_info(project_name, version=version),
         description=render(pj.description, content_type=pj.description_content_type),
+        avatar=avatar_url(),
     )
 
 
@@ -402,6 +403,7 @@ def project_history(project_name, version):
         "project_history.html",
         info=project_info(project_name, version=version),
         releases=releases,
+        avatar=avatar_url(),
     )
 
 
@@ -424,6 +426,7 @@ def project_files(project_name, version):
         "project_download.html",
         info=project_info(project_name, version=version),
         rings=rings,
+        avatar=avatar_url(),
     )
 
 
@@ -520,4 +523,4 @@ def search():
             results.append(pj)
 
     # 返回搜尋結果給前端頁面
-    return render_template("search_results.html", results=results)
+    return render_template("search_results.html", results=results, avatar=avatar_url())
