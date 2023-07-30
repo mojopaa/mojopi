@@ -16,3 +16,33 @@ When cd to the project directory:
 
 4. `python src/mojopi/admin.py` to start server with admin mode.
 5. Open web browser, open 127.0.0.1:5000
+
+### Screenshots
+
+1. Index Page
+
+![](screenshots/first_page.png)
+
+2. Search Result
+
+![](screenshots/search_result.png)
+
+3. Project Page
+
+![](screenshots/project_landing_page.png)
+
+4. Project Releases
+
+![](screenshots/releases.png)
+
+5. Project Downloads
+
+![](screenshots/downloads.png)
+
+6. Login Page
+
+![](screenshots/login.png)
+
+7. Profile
+
+![](screenshots/profile_page.png)
