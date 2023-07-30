@@ -504,3 +504,20 @@ def ring_file(name, version, platform):  # TODO: Add upload test script
             abort(400, "Upload failed. Duplicate ring.")
 
         file.save(RINGS_PATH / file.filename)
+
+
+@mojobp.route("/search")
+def search():
+    # 從 URL 中取得搜尋字串
+    query_string = request.args.get("q", "")
+
+    # 在資料庫  或內容中進行搜尋操作
+
+    pjs = Project.select().where(Project.name ** f"%{query_string}%")
+    results = []
+    for pj in pjs:
+        if query_string.lower() in pj.name.lower():
+            results.append(pj)
+
+    # 返回搜尋結果給前端頁面
+    return render_template("search_results.html", results=results)

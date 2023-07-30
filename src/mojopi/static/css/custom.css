@@ -66,3 +66,21 @@
   background-color: #f0f0f0;
   /* Add any other styling you need for the release cards */
 }
+
+.search-card {
+  width: 90%;
+  height: 80px;
+  margin: 15px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  /* Add any other styling you need for the release cards */
+}
+
+#search {
+  padding: 0 45px 0 30px;;
+  background-color: #ffe58f; /* 新增樣式：淡黃色背景 */
+}
+
+#search-result-project {
+  font-size: 20px;
+}
