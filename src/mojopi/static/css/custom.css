@@ -57,3 +57,12 @@
   transform: translate(-50%, -50%); /* This centers the button both horizontally and vertically */
   /* Add more styles as needed */
 }
+
+.release-card {
+  width: 390px;
+  height: 80px;
+  margin: 15px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  /* Add any other styling you need for the release cards */
+}

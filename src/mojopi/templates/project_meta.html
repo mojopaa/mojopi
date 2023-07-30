@@ -1,0 +1,24 @@
+<div class="col s12 m4">
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title"><a href="/project/{{info['name']}}/{{info['version']}}">Project Details</a></span>
+        <p>
+          <strong>Project Summary: </strong>{{ info.get("summary", "") }}<br>
+          {% if info["version"] %}
+          <a href="/project/{{info['name']}}/{{info['version']}}/history"><strong>Release History </strong></a><br>
+          <a href="/project/{{info['name']}}/{{info['version']}}/files"><strong>Download Files </strong></a>
+          {% else %}
+          <a href="/project/{{info['name']}}/history"><strong>Release History </strong></a><br>
+          <a href="/project/{{info['name']}}/files"><strong>Download Files </strong></a>
+          {% endif %}
+        </p>
+        <p>
+          <strong>Meta Section:</strong><br>
+          Author: {{ info.get("author", "") }}<br>
+          License: {{ info.get("license", "") }}<br>
+          Requires: {{ info.get("requires_mojo", "") }}<br>
+          Maintainers: {{ info.get("maintainer", "") }}
+        </p>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Include Materialize CSS stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  <!-- Optional: If you need to use Material Icons font, include the following line -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <title>Project</title>
+
+</head>
+
+<body>
+  {% include 'navbar.html' %}
+  <div class="container">
+    <div class="row">
+      <!-- Left Column: Sidebar -->
+      {% include 'project_meta.html' %}
+
+      <!-- Right Column: Main Content -->
+      <div class="col s12 m8">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Release History</span>
+            <hr />
+
+            {% for release in releases %}
+            <div class="release-card card">
+              <!-- Add content for each release card here -->
+              <p>
+                <strong><a href="/project/{{ release.name }}/{{ release.version }}">Release version: {{ release.version }}</a></strong><br>
+                </h3>Release date: {{ release.upload_at }}<br>
+              </p>
+            </div>
+            {% endfor %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include Materialize JavaScript files -->
+  <script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+</body>
+
+</html>

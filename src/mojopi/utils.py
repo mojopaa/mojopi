@@ -4,6 +4,7 @@ import os
 import random
 import re
 import string
+from hashlib import sha256
 
 try:
     import tomllib
@@ -37,7 +38,7 @@ else:
 
 SERVER_FILES_PATH = DPATH / "server_files"
 PIC_PATH = DPATH / "server_files" / "profile_pic"
-MATERIAL_PATH = DPATH / "server_files" / "materials"
+RINGS_PATH = DPATH / "server_files" / "rings"
 PUBLIC_PATH = DPATH / "server_files" / "public"
 
 
@@ -53,13 +54,17 @@ def init_data():
     if not os.path.exists(PIC_PATH):
         os.mkdir(PIC_PATH)
 
-    # mkdir material files
-    if not os.path.exists(MATERIAL_PATH):
-        os.mkdir(MATERIAL_PATH)
+    # mkdir ring files
+    if not os.path.exists(RINGS_PATH):
+        os.mkdir(RINGS_PATH)
 
     # public server files
     if not PUBLIC_PATH.exists():
         os.mkdir(PUBLIC_PATH)
+
+    # create mock ring
+    with open(RINGS_PATH / "test-2.ring", "w", encoding="utf-8") as f:
+        f.writelines("123")
 
 
 def generate_password(length=5):
@@ -97,3 +102,46 @@ def verify_password(password, hashed_password):
 def is_email(email):
     pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"  # 正則表達式模式
     return re.match(pattern, email) is not None
+
+
+def file_size(file_path):
+    try:
+        size = os.path.getsize(file_path)
+        return size
+    except FileNotFoundError:
+        print(f"file not found：{file_path}")
+    except Exception as e:
+        print(f"error：{e}")
+        return None
+
+
+def hr_size(size_in_bytes):
+    # 定義不同的大小單位
+    units = ["B", "KB", "MB", "GB", "TB"]
+
+    # 若檔案大小小於 1 B，直接回傳
+    if size_in_bytes < 1:
+        return f"{size_in_bytes} B"
+
+    # 計算使用哪個單位
+    unit_index = 0
+    while size_in_bytes >= 1024 and unit_index < len(units) - 1:
+        size_in_bytes /= 1024
+        unit_index += 1
+
+    # 使用適當的單位進行格式化
+    return f"{size_in_bytes:.2f} {units[unit_index]}"
+
+
+def calculate_sha256(file_path):
+    sha256_hash = sha256()
+
+    # 使用二進位模式打開檔案並將整個內容讀取到記憶體中
+    with open(file_path, "rb") as file:
+        file_content = file.read()
+
+    # 將檔案內容傳遞給 hashlib.sha256 函數
+    sha256_hash.update(file_content)
+
+    # 回傳計算得到的 SHA-256 雜湊值（以十六進位字串表示）
+    return sha256_hash.hexdigest()

@@ -8,7 +8,7 @@ from flask_login import current_user
 
 from mojopi.models import Post, User, UserInfo, db_path, init_db
 from mojopi.utils import DPATH, conf, init_data, login_manager
-from mojopi.views import apibp, avatar_url, fbp, mbp
+from mojopi.views import apibp, avatar_url, fbp, mbp, mojobp
 
 
 class UserAdmin(ModelView):
@@ -72,6 +72,7 @@ def main():
     app.register_blueprint(mbp)
     app.register_blueprint(fbp)
     app.register_blueprint(apibp)
+    app.register_blueprint(mojobp)
 
     app.run(debug=True)
 

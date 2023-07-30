@@ -13,23 +13,41 @@ from flask import (
     url_for,
 )
 from flask_login import current_user, login_user, logout_user
-from peewee import DoesNotExist, IntegrityError
+from peewee import DoesNotExist, IntegrityError, fn
 from werkzeug.utils import secure_filename
 
-from .models import Profile, User, UserInfo, add_user, is_valid_email, is_valid_username
+from .models import (
+    Profile,
+    User,
+    UserInfo,
+    add_user,
+    add_ring,
+    add_project,
+    is_valid_email,
+    is_valid_username,
+    Project,
+    Ring,
+)
 from .utils import (
     DPATH,
     PIC_PATH,
     SERVER_FILES_PATH,
+    RINGS_PATH,
     InvalidInputError,
     hash_password,
     login_manager,
     verify_password,
+    calculate_sha256,
 )
+from .readme import render
 
 apibp = Blueprint("apibp", __name__, url_prefix="/api")
 
 mbp = Blueprint("mbp", __name__)  # main bp
+
+mojobp = Blueprint("mojobp", __name__)  # everything related to mojo
+
+# TODO: 404 handler. PYPI has a search bar and good color.
 
 # files bp
 fbp = Blueprint(
@@ -223,8 +241,7 @@ def get_profile_pic(user_id):
         pic_path = PIC_PATH / user.picture
         if pic_path.is_file():
             return send_from_directory(str(pic_path.parent), pic_path.name)
-    else:
-        abort(404, "Profile picture not found.")
+    abort(404, "Profile picture not found.")
 
 
 @mbp.route("/edit_profile", methods=["GET", "POST"])
@@ -294,3 +311,196 @@ def reset_password():
 def logout():
     logout_user()
     return redirect(url_for("mbp.index"))
+
+
+def project_info(pname, version=""):
+    pj = Project.get_or_none(Project.name == pname and Project.version == version)
+    latest_ring_dt = (
+        Ring.select(fn.MAX(Ring.upload_at)).where(Ring.name == pname).scalar()
+    )
+    ring = Ring.get_or_none(Ring.name == pname and Ring.upload_at == latest_ring_dt)
+
+    if pj is None:
+        return None
+
+    info = {"name": pname}
+    info["version"] = pj.version
+    if pj.description:
+        info["description"] = pj.description
+    if pj.description_content_type:
+        info["description_content_type"] = pj.description_content_type
+    if pj.home_page:
+        info["home_page"] = pj.home_page
+    if pj.keywords:
+        info["keywords"] = pj.keywords
+    if pj.license:
+        info["license"] = pj.license
+    if ring is not None:
+        if ring.author:
+            info["author"] = ring.author
+        if ring.author_email:
+            info["author_email"] = ring.author_email
+        if ring.requires_mojo:
+            info["requires_mojo"] = ring.requires_mojo
+
+    if pj.maintainer:
+        info["maintainer"] = pj.maintainer
+    if pj.maintainer_email:
+        info["maintainer_email"] = pj.maintainer_email
+    if pj.summary:
+        info["summary"] = pj.summary
+    info["create_at"] = pj.create_at
+    info["last_modified"] = pj.last_modified
+
+    return info
+
+
+def latest_project_version(project_name):
+    latest_version = (
+        Project.select(fn.MAX(Project.version))
+        .where(Project.name == project_name)
+        .scalar()
+    )
+    return latest_version
+
+
+@mojobp.route("/project/<string:project_name>", defaults={"version": ""})
+@mojobp.route("/project/<string:project_name>/<string:version>")
+def project(project_name, version):
+    if version == "":
+        version = latest_project_version(project_name=project_name)
+
+    pj = Project.get_or_none(
+        Project.name == project_name and Project.version == version
+    )
+    if pj is None:
+        abort(404)
+    return render_template(
+        "project.html",
+        info=project_info(project_name, version=version),
+        description=render(pj.description, content_type=pj.description_content_type),
+    )
+
+
+@mojobp.route("/project/<string:project_name>/history", defaults={"version": ""})
+@mojobp.route("/project/<string:project_name>/<string:version>/history")
+def project_history(project_name, version):
+    if version == "":
+        version = latest_project_version(project_name=project_name)
+
+    pj = Project.get_or_none(
+        Project.name == project_name and Project.version == version
+    )
+    if pj is None:
+        abort(404, "Project not exist.")
+
+    releases = (
+        Ring.select().where(Ring.name == project_name).order_by(Ring.upload_at.desc())
+    )
+
+    return render_template(
+        "project_history.html",
+        info=project_info(project_name, version=version),
+        releases=releases,
+    )
+
+
+@mojobp.route("/project/<string:project_name>/files", defaults={"version": ""})
+@mojobp.route("/project/<string:project_name>/<string:version>/files")
+def project_files(project_name, version):
+    if version == "":
+        version = latest_project_version(project_name=project_name)
+
+    pj = Project.get_or_none(
+        Project.name == project_name and Project.version == version
+    )
+    if pj is None:
+        abort(404, "Project not exist.")
+
+    rings = Ring.select().where(Ring.name == project_name and Ring.version == version)
+
+    # TODO: source dist
+    return render_template(
+        "project_download.html",
+        info=project_info(project_name, version=version),
+        rings=rings,
+    )
+
+
+@fbp.route(
+    "/ring/<string:name>",
+    defaults={"version": "", "platform": ""},
+    methods=["GET", "POST"],
+)
+@fbp.route(
+    "/ring/<string:name>/<string:version>",
+    defaults={"platform": ""},
+    methods=["GET", "POST"],
+)
+@fbp.route(
+    "/ring/<string:name>/<string:version>/<string:platform>", methods=["GET", "POST"]
+)
+def ring_file(name, version, platform):  # TODO: Add upload test script
+    if not version:
+        version = latest_project_version(name)
+
+    if request.method == "GET":
+        if platform:
+            ring = Ring.get_or_none(
+                Ring.name == name
+                and Ring.version == version
+                and Ring.platform == platform
+            )
+        else:
+            ring = Ring.get_or_none(Ring.name == name and Ring.version == version)
+
+        if ring is None:
+            abort(
+                404, f"Ring not found: {name}, version: {version}, platform: {platform}"
+            )
+
+        if ring.file_name:
+            return send_from_directory(RINGS_PATH, ring.file_name)
+        else:
+            abort(404, "Ring file not uploaded.")
+
+    elif request.method == "POST":
+        if not request.is_json:
+            abort(415, "Not JSON")
+
+        file = request.files["file"]
+        if file.filename == "":
+            abort(400, "No file upload.")
+
+        data = request.get_json()
+        name = data.get("name")
+        version = data.get("version", "")
+        platform = data.get("platform", "")
+        author = data.get("author", "")
+        author_email = data.get("author_email", "")
+        require_dist = data.get("require_dist", "")
+        require_mojo = data.get("require_mojo", "")
+        file_name = file.filename
+        sha256 = calculate_sha256(RINGS_PATH / file_name)
+
+        if name is None:
+            abort(
+                422, "name not provided."
+            )  # https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/422
+
+        try:
+            add_ring(
+                name=name,
+                version=version,
+                platform=platform,
+                author=author,
+                author_email=author_email,
+                require_dist=require_dist,
+                require_mojo=require_mojo,
+                file_name=file_name,
+                sha256=sha256,
+            )
+        except InvalidInputError:
+            abort(400, "Upload failed. Duplicate ring.")
+
+        file.save(RINGS_PATH / file.filename)
