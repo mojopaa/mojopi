@@ -31,7 +31,7 @@ from .models import (
     is_valid_email,
     is_valid_username,
 )
-from .readme import render
+from .readme import render  # TODO: Not working, need to investigate
 from .utils import (
     DPATH,
     PIC_PATH,
