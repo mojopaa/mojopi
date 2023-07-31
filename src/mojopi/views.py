@@ -171,17 +171,17 @@ def register():
 @apibp.route("/username/<string:usn>")
 def username_api(usn):
     if is_valid_username(usn):
-        return jsonify({"valid": True})
+        return {"valid": True}
     else:
-        return jsonify({"valid": False})
+        return {"valid": False}
 
 
 @apibp.route("/email/<string:eml>")
 def email_api(eml):
     if is_valid_email(eml):
-        return jsonify({"valid": True})
+        return {"valid": True}
     else:
-        return jsonify({"valid": False})
+        return {"valid": False}
 
 
 @mbp.route("/profile")
