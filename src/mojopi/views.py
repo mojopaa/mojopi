@@ -1,3 +1,4 @@
+import json
 import logging
 from pathlib import Path
 
@@ -6,9 +7,11 @@ from flask import (
     abort,
     flash,
     jsonify,
+    make_response,
     redirect,
     render_template,
     request,
+    send_file,
     send_from_directory,
     url_for,
 )
@@ -18,28 +21,28 @@ from werkzeug.utils import secure_filename
 
 from .models import (
     Profile,
-    User,
-    UserInfo,
-    add_user,
-    add_ring,
-    add_project,
-    is_valid_email,
-    is_valid_username,
     Project,
     Ring,
+    User,
+    UserInfo,
+    add_project,
+    add_ring,
+    add_user,
+    is_valid_email,
+    is_valid_username,
 )
+from .readme import render
 from .utils import (
     DPATH,
     PIC_PATH,
-    SERVER_FILES_PATH,
     RINGS_PATH,
+    SERVER_FILES_PATH,
     InvalidInputError,
+    calculate_sha256,
     hash_password,
     login_manager,
     verify_password,
-    calculate_sha256,
 )
-from .readme import render
 
 apibp = Blueprint("apibp", __name__, url_prefix="/api")
 
@@ -353,6 +356,8 @@ def project_info(pname, version=""):
             info["author_email"] = ring.author_email
         if ring.requires_mojo:
             info["requires_mojo"] = ring.requires_mojo
+        if ring.file_name:
+            info["file_name"] = ring.file_name
 
     if pj.maintainer:
         info["maintainer"] = pj.maintainer
@@ -360,8 +365,47 @@ def project_info(pname, version=""):
         info["maintainer_email"] = pj.maintainer_email
     if pj.summary:
         info["summary"] = pj.summary
-    info["create_at"] = pj.create_at
-    info["last_modified"] = pj.last_modified
+    info["create_at"] = str(pj.create_at)
+    info["last_modified"] = str(pj.last_modified)
+
+    return info
+
+
+def ring_info(ring):
+    pj = Project.get_or_none(
+        Project.name == ring.name and Project.version == ring.version
+    )
+
+    info = {"name": ring.name}
+    info["version"] = ring.version
+    if ring.author:
+        info["author"] = ring.author
+    if ring.author_email:
+        info["author_email"] = ring.author_email
+    if ring.requires_mojo:
+        info["requires_mojo"] = ring.requires_mojo
+    if ring.file_name:
+        info["file_name"] = ring.file_name
+
+    if pj is not None:
+        if pj.description:
+            info["description"] = pj.description
+        if pj.description_content_type:
+            info["description_content_type"] = pj.description_content_type
+        if pj.home_page:
+            info["home_page"] = pj.home_page
+        if pj.keywords:
+            info["keywords"] = pj.keywords
+        if pj.license:
+            info["license"] = pj.license
+        if pj.maintainer:
+            info["maintainer"] = pj.maintainer
+        if pj.maintainer_email:
+            info["maintainer_email"] = pj.maintainer_email
+        if pj.summary:
+            info["summary"] = pj.summary
+        info["create_at"] = str(pj.create_at)
+        info["last_modified"] = str(pj.last_modified)
 
     return info
 
@@ -462,7 +506,7 @@ def ring_file(name, version, platform):  # TODO: Add upload test script
                 and Ring.version == version
                 and Ring.platform == platform
             )
-        else:
+        else:  # TODO: determine a default platform
             ring = Ring.get_or_none(Ring.name == name and Ring.version == version)
 
         if ring is None:
@@ -471,7 +515,20 @@ def ring_file(name, version, platform):  # TODO: Add upload test script
             )
 
         if ring.file_name:
-            return send_from_directory(RINGS_PATH, ring.file_name)
+            # Your logic to generate the additional info JSON
+            additional_info = ring_info(ring)
+
+            # Sending the file from the specified directory
+            file_path = RINGS_PATH / ring.file_name
+
+            # Creating a custom response with file content and additional info
+            response = make_response(send_file(file_path))
+
+            # Adding additional_info to the response headers
+            response.headers["x-ring-info"] = json.dumps(additional_info)
+
+            return response
+
         else:
             abort(404, "Ring file not uploaded.")
 

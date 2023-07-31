@@ -15,13 +15,13 @@ from mojopi.utils import (
     PIC_PATH,
     RINGS_PATH,
     InvalidInputError,
+    calculate_sha256,
     conf,
+    file_size,
     generate_password,
     hash_password,
-    is_email,
-    calculate_sha256,
     hr_size,
-    file_size,
+    is_email,
 )
 
 db_path = DPATH / "test.sqlite"

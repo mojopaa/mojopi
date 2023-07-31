@@ -1,6 +1,7 @@
 from flask import Flask
-from mojopi.views import mbp
+
 from mojopi.utils import login_manager
+from mojopi.views import mbp
 
 
 def test_mbp():
