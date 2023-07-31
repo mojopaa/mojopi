@@ -14,18 +14,6 @@
   <!-- 在這裡添加您的內容 -->
   {% include 'navbar.html' %}
 
-  <div class="row">
-    <!-- 使用 col s6 來指定搜尋欄佔據 6 個網格列，即佔畫面一半寬度 -->
-    <div class="col s6 m6">
-      <form action="/search" class="search-form" method="GET">
-        <div class="input-field">
-          <input class="center-align" id="search" type="text" name="q" placeholder="search..." />
-          <i id="search-icon" class="material-icons prefix">search</i>
-        </div>
-      </form>
-    </div>
-  </div>
-
   {% if not current_user.is_authenticated %}
   <div class="center-align"> <!-- This will center the button horizontally -->
     <a id="register_button" class="waves-effect waves-light btn" href="/register">Register</a>

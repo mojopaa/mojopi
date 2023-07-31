@@ -3,6 +3,19 @@
         <a href="/" class="brand-logo">Mojo Package Index</a>
         <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right">
+            <li>
+                <div class="row">
+                    <!-- 使用 col s6 來指定搜尋欄佔據 6 個網格列，即佔畫面一半寬度 -->
+                    <div class="col s6 m6">
+                      <form action="/search" class="search-form" method="GET">
+                        <div class="input-field">
+                          <input class="center-align" id="search" type="text" name="q" placeholder="search..." />
+                          <i id="search-icon" class="material-icons prefix">search</i>
+                        </div>
+                      </form>
+                    </div>
+                </div>
+            </li>
             {% if admin_mode %}
             <li><a href="/admin/">Admin</a></li>
             {% endif %}
