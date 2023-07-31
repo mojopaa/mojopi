@@ -60,6 +60,18 @@ fbp = Blueprint(
 
 
 def avatar_url():
+    """
+    Returns the URL of the user's avatar image.
+
+    This function is used to generate the avatar URL for the current user. It first checks if the user is authenticated and has a profile picture. If both conditions are met, it returns the URL for the profile picture using the "fbp.get_profile_pic" endpoint. Otherwise, it returns the URL for a default user icon image.
+
+    Returns:
+        str: The URL of the user's avatar image.
+
+    Deprecated:
+        This function is deprecated in the "navbar.html" file, but can still be used in the API.
+    """
+    # deprecated in navbar.html, but can be used in api.
     if current_user.is_authenticated and current_user.picture:
         return url_for("fbp.get_profile_pic")
     else:
@@ -83,7 +95,7 @@ def profile_pic_url(user_id):
 @mbp.route("/")
 def index():
     if current_user.is_authenticated:
-        return render_template("index.html", avatar=avatar_url())
+        return render_template("index.html")
     return render_template("index.html")
 
 
@@ -188,7 +200,6 @@ def profile(user_id):
         return render_template(
             "profile.html",
             profile_pic_url=profile_pic_url(user_id),
-            avatar=avatar_url(),
             profile=pf,
         )
     else:
@@ -251,7 +262,7 @@ def edit_profile():
 
     if request.method == "GET":
         pf = Profile.get(Profile.user == current_user)
-        return render_template("edit_profile.html", avatar=avatar_url(), profile=pf)
+        return render_template("edit_profile.html", profile=pf)
 
     elif request.method == "POST":
         username = request.form.get("username")
@@ -279,7 +290,7 @@ def edit_profile():
 def settings():
     if not current_user.is_authenticated:
         abort(401, description="Need to login to view settings.")
-    return render_template("settings.html", avatar=avatar_url())
+    return render_template("settings.html")
 
 
 @mbp.route("/reset_password", methods=["GET", "POST"])
@@ -288,7 +299,7 @@ def reset_password():
         abort(401)
 
     if request.method == "GET":
-        return render_template("reset_password.html", avatar=avatar_url())
+        return render_template("reset_password.html")
 
     elif request.method == "POST":
         new_password = request.form.get("new-password")
@@ -379,7 +390,6 @@ def project(project_name, version):
         "project.html",
         info=project_info(project_name, version=version),
         description=render(pj.description, content_type=pj.description_content_type),
-        avatar=avatar_url(),
     )
 
 
@@ -403,7 +413,6 @@ def project_history(project_name, version):
         "project_history.html",
         info=project_info(project_name, version=version),
         releases=releases,
-        avatar=avatar_url(),
     )
 
 
@@ -426,7 +435,6 @@ def project_files(project_name, version):
         "project_download.html",
         info=project_info(project_name, version=version),
         rings=rings,
-        avatar=avatar_url(),
     )
 
 
@@ -523,4 +531,4 @@ def search():
             results.append(pj)
 
     # 返回搜尋結果給前端頁面
-    return render_template("search_results.html", results=results, avatar=avatar_url())
+    return render_template("search_results.html", results=results)

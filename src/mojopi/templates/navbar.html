@@ -9,7 +9,11 @@
             {% if current_user.is_authenticated %}
             <li>
                 <a class="dropdown-trigger" href="#" data-target="user-dropdown">
-                    <li><img src="{{ avatar }}" alt="User Avatar" class="circle avatar-img-small" /></li>
+                    {% if current_user.is_authenticated and current_user.picture %}
+                    <li><img src="{{ url_for('fbp.get_profile_pic') }}" alt="User Avatar" class="circle avatar-img-small" /></li>
+                    {% else %}
+                    <li><img src='{{ url_for("static", filename="Sample_User_Icon.png") }}' alt="User Avatar" class="circle avatar-img-small" /></li>
+                    {% endif %}
                 </a>
             </li>
             <ul id="user-dropdown" class="dropdown-content">
