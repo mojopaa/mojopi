@@ -532,7 +532,7 @@ def ring_file(name, version, platform):  # TODO: Add upload test script
         else:
             abort(404, "Ring file not uploaded.")
 
-    elif request.method == "POST":
+    elif request.method == "POST":  # TODO: dead code. To be removed.
         if not request.is_json:
             abort(415, "Not JSON")
 
@@ -589,3 +589,81 @@ def search():
 
     # 返回搜尋結果給前端頁面
     return render_template("search_results.html", results=results)
+
+
+
+@apibp.route("/ring/<string:name>/<string:version>", defaults={"platform": ""})
+@apibp.route("/ring/<string:name>/<string:version>/<string:platform>")
+def ring_info_api(name, version, platform):
+    ring = Ring.get_or_none(
+        Ring.name == name and Ring.version == version and Ring.platform == platform
+    )
+    if ring is None:
+        return {"message": "Ring not found."}, 404
+
+    return ring_info(ring)
+
+
+@apibp.route("/ring/<string:name>/<string:version>/download", defaults={"platform": ""})
+@apibp.route("/ring/<string:name>/<string:version>/<string:platform>/download")
+def ring_download_api(name, version, platform):
+    ring = Ring.get_or_none(
+        Ring.name == name and Ring.version == version and Ring.platform == platform
+    )
+    if ring is None:
+        return {"message": "Ring not found."}, 404
+
+    return redirect(
+        url_for("fbp.ring_file", name=name, version=version, platform=platform)
+    )
+
+
+@apibp.route(
+    "/ring/<string:name>/<string:version>", defaults={"platform": ""}, methods=["POST"]
+)
+@apibp.route("/ring/<string:name>/<string:version>/<string:platform>", methods=["POST"])
+def ring_upload_api(name, version, platform):
+    ring = Ring.get_or_none(
+        (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
+    )
+    if ring is not None:
+        print(f"{ring = }")
+        return {"message": "Ring exists."}, 400
+
+    # 檢查是否有檔案和 info 資料
+    if "file" not in request.files or "info" not in request.files:
+        return jsonify({"error": "Missing file or info data."}), 400
+
+    # 取得檔案和 info 資料
+    file = request.files["file"]
+    info = request.files["info"].read()
+
+    # 解析 info 資料
+    try:
+        info = json.loads(info)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON format in info data."}), 400
+
+    # 取得 info 中的檔案名稱
+    file_name = info.get("file_name")
+
+    # 確認檔案名稱存在且非空
+    if not file_name:
+        return jsonify({"error": "File name missing in info data."}), 400
+
+    # 儲存檔案
+    file.save(RINGS_PATH / file_name)
+    add_ring(
+        name=name,
+        version=version,
+        platform=platform,
+        file_name=file_name,
+        author=info.get("author"),
+        author_email=info.get("author_email"),
+        require_dist=info.get("require_dist"),
+        requires_mojo=info.get("require_mojo"),  # TODO: rename require_mojo
+        sha256=calculate_sha256(RINGS_PATH / file_name),
+    )
+    # 回傳成功訊息
+    return jsonify({"message": "File uploaded successfully."}), 200
+
