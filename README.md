@@ -46,3 +46,9 @@ When cd to the project directory:
 7. Profile
 
 ![](screenshots/profile_page.png)
+
+
+### Contruibuting
+
+**Seeking experienced Materializecss frontend developers!**
+There are quite a lot of UIs to be tweaked. The TODOs are in the [TODO.md](TODO.md)
