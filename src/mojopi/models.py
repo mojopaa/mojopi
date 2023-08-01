@@ -166,7 +166,7 @@ def init_db():
     mock_profile = Profile.get(Profile.user == mock_user)
     mock_profile.education = "建國中學"
     mock_profile.experience = "Simutech New Comer"
-    mock_profile.bio = """I am an experienced Python engineer with 5 years of relevant work experience. I am deeply passionate about this profession, and I believe my expertise in Python and related technologies, along with my adaptability, make me the ideal candidate for your company.
+    mock_profile.bio = """**I am an experienced Python engineer with 5 years of relevant work experience.** I am deeply passionate about this profession, and I believe my expertise in Python and related technologies, along with my adaptability, make me the ideal candidate for your company.
 
 In my previous roles, I have been responsible for designing and developing various complex Python applications. My expertise extends to, but is not limited to, Django, Flask, NumPy, Pandas, Selenium, and more.
 
@@ -195,28 +195,31 @@ ASDF is under active development on github. More information on contributing can
 Overview
 This section outlines basic use cases of the ASDF package for creating and reading ASDF files.
 """
-    add_project(name="test", version="1")
-    add_project(
-        name="test",
-        version="2",
-        description=des,
-        description_content_type="text/plain",
-        summary="asdf asdf",
-        license="MIT",
-        keywords="test1, test2",
-        maintainer="asdf",
-        maintainer_email="asdf@gmail.com",
-        home_page="https://pypi.org/project/asdf/",
-    )
+    try:
+        add_project(name="test", version="1")
+        add_project(
+            name="test",
+            version="2",
+            description=des,
+            description_content_type="text/plain",
+            summary="asdf asdf",
+            license="MIT",
+            keywords="test1, test2",
+            maintainer="asdf",
+            maintainer_email="asdf@gmail.com",
+            home_page="https://pypi.org/project/asdf/",
+        )
 
-    # mock ring
-    add_ring(name="test", version="1")
-    add_ring(
-        name="test",
-        version="2",
-        file_name="test-2.ring",
-        sha256="a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
-    )
+        # mock ring
+        add_ring(name="test", version="1")
+        add_ring(
+            name="test",
+            version="2",
+            file_name="test-2.ring",
+            sha256="a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        )
+    except InvalidInputError:
+        pass
 
 
 def add_user(email="", username="", password=""):
@@ -373,7 +376,9 @@ def add_project(
         pj.save(force_insert=True)
     except peewee.IntegrityError as e:
         if "project.name" in str(e):
-            raise InvalidInputError(f"Invalid project name: {pj.name}. It's duplicate.")
+            raise InvalidInputError(
+                f"Invalid project: {pj.name}-{pj.version}. It's duplicate."
+            )
 
         # Why varchar(100) no exception?
         # This is because in some database systems, a VARCHAR(100) field can store data that does not exceed 100 characters,

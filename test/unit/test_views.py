@@ -1,7 +1,7 @@
 from flask import Flask
 
 from mojopi.utils import login_manager
-from mojopi.views import mbp
+from mojopi.views import fbp, mbp
 
 
 def test_mbp():
@@ -10,6 +10,7 @@ def test_mbp():
     login_manager.init_app(app)
 
     app.register_blueprint(mbp)
+    app.register_blueprint(fbp)
 
     client = app.test_client()
 

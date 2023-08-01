@@ -8,6 +8,7 @@ from mojopi.utils import PIC_PATH, init_data
 def test_add_user():
     init_data()
     init_db()
+
     try:
         add_user(
             email="eric@simutech.com.tw", username="drunkwcodes", password="123456"
