@@ -33,4 +33,12 @@ dev = [
     "ipython>=8.14.0",
     "requests>=2.31.0",
     "requests-toolbelt>=1.0.0",
+    "towncrier>=23.6.0",
 ]
+
+[tool.towncrier]
+package = "mojopi"
+package_dir = "src"
+name = "MojoPI"
+directory = "news"
+filename = "CHANGELOG.md"
