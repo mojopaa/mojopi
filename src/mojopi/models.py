@@ -71,7 +71,7 @@ class Profile(BaseModel):
     is_public = peewee.BooleanField(default=True)
 
 
-class UserInfo(BaseModel):
+class UserInfo(BaseModel):  # TODO: remove
     key = peewee.CharField(max_length=64)
     value = peewee.CharField(max_length=64)
 
@@ -103,7 +103,7 @@ class Ring(BaseModel):
     author_email = peewee.CharField(max_length=50, null=True)
     requires_dist = peewee.TextField(null=True)
     requires_mojo = peewee.CharField(max_length=20, null=True)
-    yanked = peewee.BooleanField(default=False)
+    yanked = peewee.CharField(max_length=10, null=True)
     yanked_reason = peewee.CharField(max_length=100, null=True)
     file_name = peewee.CharField(max_length=100, null=True)
     sha256 = peewee.CharField(max_length=64, null=True)
