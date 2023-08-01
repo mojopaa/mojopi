@@ -324,7 +324,10 @@ def add_ring(
     except peewee.IntegrityError:
         raise InvalidInputError("Duplicate ring.")
 
-    if Project.get_or_none(Project.name == name and Project.version == version) is None:
+    if (
+        Project.get_or_none((Project.name == name) & (Project.version == version))
+        is None
+    ):
         add_project(
             name=name, version=version, maintainer=author, maintainer_email=author_email
         )

@@ -328,11 +328,11 @@ def logout():
 
 
 def project_info(pname, version=""):
-    pj = Project.get_or_none(Project.name == pname and Project.version == version)
+    pj = Project.get_or_none((Project.name == pname) & (Project.version == version))
     latest_ring_dt = (
         Ring.select(fn.MAX(Ring.upload_at)).where(Ring.name == pname).scalar()
     )
-    ring = Ring.get_or_none(Ring.name == pname and Ring.upload_at == latest_ring_dt)
+    ring = Ring.get_or_none((Ring.name == pname) & (Ring.upload_at == latest_ring_dt))
 
     if pj is None:
         return None
@@ -373,7 +373,7 @@ def project_info(pname, version=""):
 
 def ring_info(ring):
     pj = Project.get_or_none(
-        Project.name == ring.name and Project.version == ring.version
+        (Project.name == ring.name) & (Project.version == ring.version)
     )
 
     info = {"name": ring.name}
@@ -426,7 +426,7 @@ def project(project_name, version):
         version = latest_project_version(project_name=project_name)
 
     pj = Project.get_or_none(
-        Project.name == project_name and Project.version == version
+        (Project.name == project_name) & (Project.version == version)
     )
     if pj is None:
         abort(404)
@@ -444,7 +444,7 @@ def project_history(project_name, version):
         version = latest_project_version(project_name=project_name)
 
     pj = Project.get_or_none(
-        Project.name == project_name and Project.version == version
+        (Project.name == project_name) & (Project.version == version)
     )
     if pj is None:
         abort(404, "Project not exist.")
@@ -467,12 +467,12 @@ def project_files(project_name, version):
         version = latest_project_version(project_name=project_name)
 
     pj = Project.get_or_none(
-        Project.name == project_name and Project.version == version
+        (Project.name == project_name) & (Project.version == version)
     )
     if pj is None:
         abort(404, "Project not exist.")
 
-    rings = Ring.select().where(Ring.name == project_name and Ring.version == version)
+    rings = Ring.select().where((Ring.name == project_name) & (Ring.version == version))
 
     # TODO: source dist
     return render_template(
@@ -502,12 +502,12 @@ def ring_file(name, version, platform):  # TODO: Add upload test script
     if request.method == "GET":
         if platform:
             ring = Ring.get_or_none(
-                Ring.name == name
-                and Ring.version == version
-                and Ring.platform == platform
+                (Ring.name == name)
+                & (Ring.version == version)
+                & (Ring.platform == platform)
             )
         else:  # TODO: determine a default platform
-            ring = Ring.get_or_none(Ring.name == name and Ring.version == version)
+            ring = Ring.get_or_none((Ring.name == name) & (Ring.version == version))
 
         if ring is None:
             abort(
@@ -591,12 +591,11 @@ def search():
     return render_template("search_results.html", results=results)
 
 
-
 @apibp.route("/ring/<string:name>/<string:version>", defaults={"platform": ""})
 @apibp.route("/ring/<string:name>/<string:version>/<string:platform>")
 def ring_info_api(name, version, platform):
     ring = Ring.get_or_none(
-        Ring.name == name and Ring.version == version and Ring.platform == platform
+        (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
     )
     if ring is None:
         return {"message": "Ring not found."}, 404
@@ -608,7 +607,7 @@ def ring_info_api(name, version, platform):
 @apibp.route("/ring/<string:name>/<string:version>/<string:platform>/download")
 def ring_download_api(name, version, platform):
     ring = Ring.get_or_none(
-        Ring.name == name and Ring.version == version and Ring.platform == platform
+        (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
     )
     if ring is None:
         return {"message": "Ring not found."}, 404
@@ -666,4 +665,3 @@ def ring_upload_api(name, version, platform):
     )
     # 回傳成功訊息
     return jsonify({"message": "File uploaded successfully."}), 200
-
