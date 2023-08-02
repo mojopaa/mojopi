@@ -62,8 +62,7 @@ def main():
     @adminbp.route("/")
     def index():
         if current_user.is_authenticated:
-            avatar = avatar_url()
-            return render_template("index.html", avatar=avatar, admin_mode=True)
+            return render_template("index.html", admin_mode=True)
         return render_template("index.html", admin_mode=True)
 
     app.register_blueprint(
