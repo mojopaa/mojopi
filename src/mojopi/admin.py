@@ -8,7 +8,7 @@ from flask_login import current_user
 
 from mojopi.models import Post, User, UserInfo, db_path, init_db
 from mojopi.utils import DPATH, conf, init_data, login_manager
-from mojopi.views import apibp, avatar_url, fbp, mbp, mojobp
+from mojopi.views import apibp, fbp, mbp, mojobp
 
 
 class UserAdmin(ModelView):
