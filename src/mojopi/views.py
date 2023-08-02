@@ -46,7 +46,9 @@ from .utils import (
 
 apibp = Blueprint("apibp", __name__, url_prefix="/api")  # json api
 
-mbp = Blueprint("mbp", __name__)  # main bp, including index page, login, register, profile, settings etc.
+mbp = Blueprint(
+    "mbp", __name__
+)  # main bp, including index page, login, register, profile, settings etc.
 
 mojobp = Blueprint("mojobp", __name__)  # everything related to mojo
 
@@ -62,35 +64,25 @@ fbp = Blueprint(
 )
 
 
-def avatar_url():
-    """
-    Returns the URL of the user's avatar image.
+def profile_pic_url(user_id=0, username=""):
+    # default anonymous avatar
+    url = url_for("static", filename="Sample_User_Icon.png")
 
-    This function is used to generate the avatar URL for the current user. It first checks if the user is authenticated and has a profile picture. If both conditions are met, it returns the URL for the profile picture using the "fbp.get_profile_pic" endpoint. Otherwise, it returns the URL for a default user icon image.
-
-    Returns:
-        str: The URL of the user's avatar image.
-
-    Deprecated:
-        This function is deprecated in the "navbar.html" file, but can still be used in the API.
-    """
-    # deprecated in navbar.html, but can be used in api.
-    if current_user.is_authenticated and current_user.picture:
-        return url_for("fbp.get_profile_pic")
+    if user_id:
+        try:
+            user = User.get_by_id(user_id)
+        except DoesNotExist:
+            return url
+    elif username:
+        user = User.get_or_none(User.username == username)
+        if user is None:
+            return url
     else:
-        return url_for("static", filename="Sample_User_Icon.png")
-
-
-def profile_pic_url(user_id):
-    try:
-        user = User.get_by_id(user_id)
-    except DoesNotExist:
-        return url_for("static", filename="Sample_User_Icon.png")
+        return url
 
     if user.picture:
+        user_id = user.id
         url = url_for("fbp.get_profile_pic", user_id=user_id)
-    else:
-        url = url_for("static", filename="Sample_User_Icon.png")
 
     return url
 
@@ -202,7 +194,7 @@ def profile(user_id):
     if pf.is_public or current_user == user:
         return render_template(
             "profile.html",
-            profile_pic_url=profile_pic_url(user_id),
+            profile_pic_url=profile_pic_url(user_id=user_id),
             profile=pf,
         )
     else:
