@@ -44,9 +44,9 @@ from .utils import (
     verify_password,
 )
 
-apibp = Blueprint("apibp", __name__, url_prefix="/api")
+apibp = Blueprint("apibp", __name__, url_prefix="/api")  # json api
 
-mbp = Blueprint("mbp", __name__)  # main bp
+mbp = Blueprint("mbp", __name__)  # main bp, including index page, login, register, profile, settings etc.
 
 mojobp = Blueprint("mojobp", __name__)  # everything related to mojo
 

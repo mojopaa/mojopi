@@ -334,6 +334,7 @@ def add_ring(
         add_project(
             name=name, version=version, maintainer=author, maintainer_email=author_email
         )
+    return ring
 
 
 def add_project(
@@ -384,3 +385,5 @@ def add_project(
         # This is because in some database systems, a VARCHAR(100) field can store data that does not exceed 100 characters,
         # and when attempting to store data that exceeds the limit, it will automatically truncate the exceeding part.
         # This may result in data being truncated without raising an exception.
+
+    return pj
