@@ -32,7 +32,10 @@ class InvalidInputError(Exception):
 
 
 if not Path(conf["data_folder"]).parent.exists():  # The folder contains data not exists
-    DPATH = Path(__file__).parent.parent.parent / "data"
+    if "python" in str(Path(__file__)).lower():
+        DPATH = Path(os.getcwd()) / "data"  # TODO: test
+    else:
+        DPATH = Path(__file__).parent.parent.parent / "data"
 else:
     DPATH = Path(conf["data_folder"])
 
@@ -116,6 +119,15 @@ def file_size(file_path):
 
 
 def hr_size(size_in_bytes):
+    """
+    Calculate the human-readable size of a file.
+
+    Args:
+        size_in_bytes (int): The size of the file in bytes.
+
+    Returns:
+        str: The human-readable size of the file.
+    """
     # 定義不同的大小單位
     units = ["B", "KB", "MB", "GB", "TB"]
 
