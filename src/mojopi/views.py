@@ -85,7 +85,7 @@ def profile_pic_url(user_id):
     try:
         user = User.get_by_id(user_id)
     except DoesNotExist:
-        url = url_for("static", filename="Sample_User_Icon.png")
+        return url_for("static", filename="Sample_User_Icon.png")
 
     if user.picture:
         url = url_for("fbp.get_profile_pic", user_id=user_id)
