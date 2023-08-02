@@ -50,5 +50,7 @@ When cd to the project directory:
 
 ### Contruibuting
 
+Please see [CONTRIBUTING](CONTRIBUTING.md)
+
 **Seeking experienced Materializecss frontend developers!**
 There are quite a lot of UIs to be tweaked. The TODOs are in the [TODO.md](TODO.md)
