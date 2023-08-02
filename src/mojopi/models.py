@@ -71,28 +71,6 @@ class Profile(BaseModel):
     is_public = peewee.BooleanField(default=True)
 
 
-class UserInfo(BaseModel):  # TODO: remove
-    key = peewee.CharField(max_length=64)
-    value = peewee.CharField(max_length=64)
-
-    user = peewee.ForeignKeyField(User)
-
-    def __str__(self):
-        return f"{self.key} - {self.value}"
-
-
-class Post(BaseModel):  # TODO: remove
-    id = peewee.UUIDField(primary_key=True, default=uuid.uuid4)
-    title = peewee.CharField(max_length=120)
-    text = peewee.TextField(null=False)
-    date = peewee.DateTimeField()
-
-    user = peewee.ForeignKeyField(User)
-
-    def __str__(self):
-        return self.title
-
-
 # refer to pypi, look at test/read_pypi_json.ipynb
 # info = dir(Ring) + dir(Project)
 class Ring(BaseModel):
@@ -145,8 +123,6 @@ def init_db():
 
     try:
         User.create_table()
-        UserInfo.create_table()
-        Post.create_table()
         Profile.create_table()
         Ring.create_table()
         Project.create_table()

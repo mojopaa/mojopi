@@ -24,7 +24,6 @@ from .models import (
     Project,
     Ring,
     User,
-    UserInfo,
     add_project,
     add_ring,
     add_user,

@@ -6,30 +6,13 @@ from flask import Blueprint, Flask, render_template, url_for
 from flask_admin.contrib.peewee import ModelView
 from flask_login import current_user
 
-from mojopi.models import Post, User, UserInfo, db_path, init_db
+from mojopi.models import User, db_path, init_db
 from mojopi.utils import DPATH, conf, init_data, login_manager
 from mojopi.views import apibp, fbp, mbp, mojobp
 
 
 class UserAdmin(ModelView):
-    inline_models = (UserInfo,)
-
-
-class PostAdmin(ModelView):
-    # Visible columns in the list view
-    column_exclude_list = ["text"]
-
-    # List of columns that can be sorted. For 'user' column, use User.email as
-    # a column.
-    column_sortable_list = ("title", ("user", User.email), "date")
-
-    # Full text search
-    column_searchable_list = ("title", User.username)
-
-    # Column filters
-    column_filters = ("title", "date", User.username)
-
-    form_ajax_refs = {"user": {"fields": (User.username, "email")}}
+    column_display_pk = True
 
 
 def main():
@@ -50,7 +33,6 @@ def main():
     admin = fadmin.Admin(app, name="MojoPI Admin")
 
     admin.add_view(UserAdmin(User))
-    admin.add_view(PostAdmin(Post))
 
     # setup db
     if not Path(db_path).exists():
