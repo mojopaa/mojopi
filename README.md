@@ -2,11 +2,19 @@
 
 ### Installation and Usage
 
-When cd to the project directory:
+以下步驟會 clone 兩個專案，並安裝到同一個 `.venv`
 
-1. Use `pip install pdm`
-2. `pdm install -d`
-3. activate venv
+- Use `pip install pdm`
+
+- `git clone git@github.com:drunkwcodes/mojopi.git`
+- `git clone git@github.com:drunkwcodes/mups.git`
+- `cd mojopi`
+- `pdm install -d`
+- `cd ../mups`
+- `pdm use -f /path/to/mojopi/.venv`
+- `pdm install`
+
+- activate venv
 
     Windows:
     `.venv\Scripts\activate`
@@ -14,8 +22,8 @@ When cd to the project directory:
     Linux:
     `.venv/bin/activate`
 
-4. `python src/mojopi/admin.py` to start server with admin mode.
-5. Open web browser, open 127.0.0.1:5000
+- `python src/mojopi/admin.py` to start server with admin mode.
+- Open web browser, open 127.0.0.1:5000
 
 ### Screenshots
 

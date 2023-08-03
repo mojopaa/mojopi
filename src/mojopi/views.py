@@ -18,6 +18,8 @@ from flask import (
 from flask_login import current_user, login_user, logout_user
 from peewee import DoesNotExist, IntegrityError, fn
 from werkzeug.utils import secure_filename
+from mups import RingInfo
+from serde import to_dict
 
 from .models import (
     Profile,
@@ -362,7 +364,7 @@ def project_info(pname, version=""):
     return info
 
 
-def ring_info(ring):
+def composite_info(ring):
     pj = Project.get_or_none(
         (Project.name == ring.name) & (Project.version == ring.version)
     )
@@ -507,7 +509,7 @@ def ring_file(name, version, platform):  # TODO: Add upload test script
 
         if ring.file_name:
             # Your logic to generate the additional info JSON
-            additional_info = ring_info(ring)
+            additional_info = composite_info(ring)
 
             # Sending the file from the specified directory
             file_path = RINGS_PATH / ring.file_name
@@ -591,7 +593,7 @@ def ring_info_api(name, version, platform):
     if ring is None:
         return {"message": "Ring not found."}, 404
 
-    return ring_info(ring)
+    return composite_info(ring)
 
 
 @apibp.route("/ring/<string:name>/<string:version>/download", defaults={"platform": ""})
@@ -622,7 +624,7 @@ def ring_upload_api(name, version, platform):
 
     # 檢查是否有檔案和 info 資料
     if "file" not in request.files or "info" not in request.files:
-        return jsonify({"error": "Missing file or info data."}), 400
+        return {"error": "Missing file or info data."}, 400
 
     # 取得檔案和 info 資料
     file = request.files["file"]
@@ -632,14 +634,14 @@ def ring_upload_api(name, version, platform):
     try:
         info = json.loads(info)
     except json.JSONDecodeError:
-        return jsonify({"error": "Invalid JSON format in info data."}), 400
+        return {"error": "Invalid JSON format in info data."}, 400
 
     # 取得 info 中的檔案名稱
     file_name = info.get("file_name")
 
     # 確認檔案名稱存在且非空
     if not file_name:
-        return jsonify({"error": "File name missing in info data."}), 400
+        return {"error": "File name missing in info data."}, 400
 
     # 儲存檔案
     file.save(RINGS_PATH / file_name)
@@ -655,4 +657,4 @@ def ring_upload_api(name, version, platform):
         sha256=calculate_sha256(RINGS_PATH / file_name),
     )
     # 回傳成功訊息
-    return jsonify({"message": "File uploaded successfully."}), 200
+    return {"message": "File uploaded successfully."}, 200
