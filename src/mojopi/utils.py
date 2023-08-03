@@ -31,7 +31,9 @@ class InvalidInputError(Exception):
     pass
 
 
-if not Path(conf["data_folder"]).parent.exists():  # The folder contains data not exists
+if (
+    conf.get("data_folder") is None or not Path(conf.get("data_folder")).parent.exists()
+):  # The folder contains data not exists
     if "python" in str(Path(__file__)).lower():
         DPATH = Path(os.getcwd()) / "data"  # TODO: test
     else:
@@ -39,13 +41,18 @@ if not Path(conf["data_folder"]).parent.exists():  # The folder contains data no
 else:
     DPATH = Path(conf["data_folder"])
 
+
 SERVER_FILES_PATH = DPATH / "server_files"
 PIC_PATH = DPATH / "server_files" / "profile_pic"
 RINGS_PATH = DPATH / "server_files" / "rings"
 PUBLIC_PATH = DPATH / "server_files" / "public"
 
 
-def init_data():
+MOCK_DB = conf.get("mock_db", False)
+MOCK_DATA = conf.get("mock_data", False)
+
+
+def init_data(mock=MOCK_DATA):
     if not os.path.exists(Path(DPATH)):
         os.makedirs(DPATH)
 
@@ -65,6 +72,10 @@ def init_data():
     if not PUBLIC_PATH.exists():
         os.mkdir(PUBLIC_PATH)
 
+    if not mock:
+        return
+
+    # start mocking
     # create mock ring
     with open(RINGS_PATH / "test-2.ring", "w", encoding="utf-8") as f:
         f.writelines("123")

@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 
 from mojopi.utils import (
     DPATH,
+    MOCK_DB,
     PIC_PATH,
     RINGS_PATH,
     InvalidInputError,
@@ -117,7 +118,7 @@ class Project(BaseModel):
         primary_key = peewee.CompositeKey("name", "version")  # 設定聯合主鍵
 
 
-def init_db():
+def init_db(mock=MOCK_DB):
     if not db_path.parent.is_dir():
         os.makedirs(db_path.parent)
 
@@ -131,6 +132,10 @@ def init_db():
         print("Create table error. See log for more information.")
         # pass
 
+    if not mock:
+        return
+
+    # start mocking
     try:
         add_user(
             email="eric@simutech.com.tw", username="drunkwcodes", password="123456"

@@ -16,7 +16,7 @@ class UserAdmin(ModelView):
 
 
 def main():
-    init_data()
+    init_data(mock=conf.get("mock_data", True))
 
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "123456790"  # 設置一個密鑰以進行會話加密
@@ -36,7 +36,7 @@ def main():
 
     # setup db
     if not Path(db_path).exists():
-        init_db()
+        init_db(mock=conf.get("mock_db", True))
 
     # views
     adminbp = Blueprint("adminbp", __name__)
