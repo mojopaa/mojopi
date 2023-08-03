@@ -17,6 +17,7 @@ The following steps will clone two projects and install them into the same `.ven
 - `cd ../mups`
 - `pdm use -f /path/to/mojopi/.venv`
 - `pdm install`
+- cd back to mojopi `cd ../mojopi`
 
 - activate venv
 
