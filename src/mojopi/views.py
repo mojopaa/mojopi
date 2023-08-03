@@ -620,9 +620,14 @@ def search():
 
     pjs = Project.select().where(Project.name ** f"%{query_string}%")
     results = []
-    for pj in pjs:
-        if query_string.lower() in pj.name.lower():
-            results.append(pj)
+    pj_names = {pj.name for pj in pjs}
+    for pj_name in pj_names:
+        results.append(
+            Project.get_or_none(
+                (Project.name == pj_name)
+                & (Project.version == latest_project_version(pj_name))
+            )
+        )
 
     # 返回搜尋結果給前端頁面
     return render_template("search_results.html", results=results)
