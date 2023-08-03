@@ -60,6 +60,14 @@ The following steps will clone two projects and install them into the same `.ven
 ![](screenshots/profile_page.png)
 
 
+### API doc
+
+open `http://127.0.0.1:5000/doc`, you will see:
+
+![](screenshots/OpenAPI_doc.png)
+
+![](screenshots/try_it.png)
+
 ### Contruibuting
 
 Please see [CONTRIBUTING](CONTRIBUTING.md)

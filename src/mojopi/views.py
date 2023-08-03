@@ -1,5 +1,6 @@
 import json
 import logging
+from dataclasses import dataclass, is_dataclass
 from pathlib import Path
 
 from flask import (
@@ -16,13 +17,13 @@ from flask import (
     url_for,
 )
 from flask_login import current_user, login_user, logout_user
-from peewee import DoesNotExist, IntegrityError, fn
-from werkzeug.utils import secure_filename
-from mups import RingInfo
-from serde import to_dict
 from flask_restx import Api, Resource, fields
-from dataclasses import dataclass, is_dataclass
+from mups import RingInfo
+from peewee import DoesNotExist, IntegrityError, fn
+from serde import to_dict
+from werkzeug.utils import secure_filename
 
+from . import __version__
 from .models import (
     Profile,
     Project,
@@ -46,7 +47,6 @@ from .utils import (
     login_manager,
     verify_password,
 )
-from . import __version__
 
 # apibp = Blueprint("apibp", __name__, url_prefix="/api")  # json api
 
@@ -96,6 +96,7 @@ api = Api(
     version=__version__,
     title="MojoPI API",
     description="MojoPI API are all list here",
+    doc="/doc",
     terms_url="https://github.com/drunkwcodes/mojopi/blob/main/terms_of_service.txt",
     contact="drunkwcodes@gmail.com",
     license="MIT",
@@ -103,7 +104,7 @@ api = Api(
     prefix="/api",
 )
 
-ring_info_model = api.model("ModelName", convert_to_fields(RingInfo))
+ring_info_model = api.model("RingInfoModel", convert_to_fields(RingInfo))
 
 
 def profile_pic_url(user_id=0, username=""):
@@ -203,19 +204,21 @@ def register():
 
 
 @api.route("/username/<string:usn>")
-def username_api(usn):
-    if is_valid_username(usn):
-        return {"valid": True}
-    else:
-        return {"valid": False}
+class UsernameResource(Resource):
+    def get(self, usn):
+        if is_valid_username(usn):
+            return {"valid": True}
+        else:
+            return {"valid": False}
 
 
 @api.route("/email/<string:eml>")
-def email_api(eml):
-    if is_valid_email(eml):
-        return {"valid": True}
-    else:
-        return {"valid": False}
+class EmailResource(Resource):
+    def get(self, eml):
+        if is_valid_email(eml):
+            return {"valid": True}
+        else:
+            return {"valid": False}
 
 
 @mbp.route("/profile")
@@ -630,16 +633,20 @@ def search():
 class RingResource(Resource):
     def get(self, name, version, platform=""):
         ring = Ring.get_or_none(
-            (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
+            (Ring.name == name)
+            & (Ring.version == version)
+            & (Ring.platform == platform)
         )
         if ring is None:
             return {"message": "Ring not found."}, 404
 
         return composite_info(ring)
-    
+
     def post(self, name, version, platform=""):
         ring = Ring.get_or_none(
-            (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
+            (Ring.name == name)
+            & (Ring.version == version)
+            & (Ring.platform == platform)
         )
         if ring is not None:
             print(f"{ring = }")
@@ -683,13 +690,14 @@ class RingResource(Resource):
         return {"message": "File uploaded successfully."}, 200
 
 
-
 @api.route("/ring/<string:name>/<string:version>/download")
 @api.route("/ring/<string:name>/<string:version>/<string:platform>/download")
 class RingDownloadResource(Resource):
-    def get(name, version, platform=""):
+    def get(self, name, version, platform=""):
         ring = Ring.get_or_none(
-            (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
+            (Ring.name == name)
+            & (Ring.version == version)
+            & (Ring.platform == platform)
         )
         if ring is None:
             return {"message": "Ring not found."}, 404
@@ -697,4 +705,3 @@ class RingDownloadResource(Resource):
         return redirect(
             url_for("fbp.ring_file", name=name, version=version, platform=platform)
         )
-
