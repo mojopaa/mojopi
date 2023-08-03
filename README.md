@@ -1,8 +1,12 @@
 # Mojo Package Index
 
+If something is not working for you, please check out [0.1.0](https://github.com/drunkwcodes/mojopi/tree/0.1.0) first for the smoothest experience.
+
+`git checkout 0.1.0`
+
 ### Installation and Usage
 
-以下步驟會 clone 兩個專案，並安裝到同一個 `.venv`
+The following steps will clone two projects and install them into the same `.venv`:
 
 - Use `pip install pdm`
 

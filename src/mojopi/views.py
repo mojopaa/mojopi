@@ -20,6 +20,8 @@ from peewee import DoesNotExist, IntegrityError, fn
 from werkzeug.utils import secure_filename
 from mups import RingInfo
 from serde import to_dict
+from flask_restx import Api, Resource, fields
+from dataclasses import dataclass, is_dataclass
 
 from .models import (
     Profile,
@@ -44,8 +46,9 @@ from .utils import (
     login_manager,
     verify_password,
 )
+from . import __version__
 
-apibp = Blueprint("apibp", __name__, url_prefix="/api")  # json api
+# apibp = Blueprint("apibp", __name__, url_prefix="/api")  # json api
 
 mbp = Blueprint(
     "mbp", __name__
@@ -63,6 +66,44 @@ fbp = Blueprint(
     static_url_path="/public",
     url_prefix="/files",
 )
+
+
+# 對應不同型別和 fields 類之間的對應關係
+TYPE_TO_FIELD = {
+    int: fields.Integer,
+    str: fields.String,
+    bool: fields.Boolean,
+    float: fields.Float,
+    list: fields.List,
+    # 在這裡添加其他型別對應的 fields 類
+}
+
+
+# 轉換 dataclass 屬性到資料模型的 fields
+def convert_to_fields(data_class):
+    fields_dict = {}
+    for field_name, field_type in data_class.__annotations__.items():
+        if is_dataclass(field_type):
+            fields_dict[field_name] = convert_to_fields(field_type)
+        else:
+            field_class = TYPE_TO_FIELD.get(field_type, fields.Raw)
+            fields_dict[field_name] = field_class(description=f"The {field_name} field")
+    return fields_dict
+
+
+# 初始化資料模型
+api = Api(
+    version=__version__,
+    title="MojoPI API",
+    description="MojoPI API are all list here",
+    terms_url="https://github.com/drunkwcodes/mojopi/blob/main/terms_of_service.txt",
+    contact="drunkwcodes@gmail.com",
+    license="MIT",
+    license_url="https://github.com/drunkwcodes/mojopi/blob/main/LICENSE",
+    prefix="/api",
+)
+
+ring_info_model = api.model("ModelName", convert_to_fields(RingInfo))
 
 
 def profile_pic_url(user_id=0, username=""):
@@ -161,7 +202,7 @@ def register():
         return redirect(url_for("mbp.index"))
 
 
-@apibp.route("/username/<string:usn>")
+@api.route("/username/<string:usn>")
 def username_api(usn):
     if is_valid_username(usn):
         return {"valid": True}
@@ -169,7 +210,7 @@ def username_api(usn):
         return {"valid": False}
 
 
-@apibp.route("/email/<string:eml>")
+@api.route("/email/<string:eml>")
 def email_api(eml):
     if is_valid_email(eml):
         return {"valid": True}
@@ -584,77 +625,76 @@ def search():
     return render_template("search_results.html", results=results)
 
 
-@apibp.route("/ring/<string:name>/<string:version>", defaults={"platform": ""})
-@apibp.route("/ring/<string:name>/<string:version>/<string:platform>")
-def ring_info_api(name, version, platform):
-    ring = Ring.get_or_none(
-        (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
-    )
-    if ring is None:
-        return {"message": "Ring not found."}, 404
+@api.route("/ring/<string:name>/<string:version>/<string:platform>")
+@api.route("/ring/<string:name>/<string:version>")
+class RingResource(Resource):
+    def get(self, name, version, platform=""):
+        ring = Ring.get_or_none(
+            (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
+        )
+        if ring is None:
+            return {"message": "Ring not found."}, 404
 
-    return composite_info(ring)
+        return composite_info(ring)
+    
+    def post(self, name, version, platform=""):
+        ring = Ring.get_or_none(
+            (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
+        )
+        if ring is not None:
+            print(f"{ring = }")
+            return {"message": "Ring exists."}, 400
+
+        # 檢查是否有檔案和 info 資料
+        if "file" not in request.files or "info" not in request.files:
+            return {"error": "Missing file or info data."}, 400
+
+        # 取得檔案和 info 資料
+        file = request.files["file"]
+        info = request.files["info"].read()
+
+        # 解析 info 資料
+        try:
+            info = json.loads(info)
+        except json.JSONDecodeError:
+            return {"error": "Invalid JSON format in info data."}, 400
+
+        # 取得 info 中的檔案名稱
+        file_name = info.get("file_name")
+
+        # 確認檔案名稱存在且非空
+        if not file_name:
+            return {"error": "File name missing in info data."}, 400
+
+        # 儲存檔案
+        file.save(RINGS_PATH / file_name)
+        add_ring(
+            name=name,
+            version=version,
+            platform=platform,
+            file_name=file_name,
+            author=info.get("author"),
+            author_email=info.get("author_email"),
+            require_dist=info.get("require_dist"),
+            requires_mojo=info.get("require_mojo"),  # TODO: rename require_mojo
+            sha256=calculate_sha256(RINGS_PATH / file_name),
+        )
+        # 回傳成功訊息
+        return {"message": "File uploaded successfully."}, 200
 
 
-@apibp.route("/ring/<string:name>/<string:version>/download", defaults={"platform": ""})
-@apibp.route("/ring/<string:name>/<string:version>/<string:platform>/download")
-def ring_download_api(name, version, platform):
-    ring = Ring.get_or_none(
-        (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
-    )
-    if ring is None:
-        return {"message": "Ring not found."}, 404
 
-    return redirect(
-        url_for("fbp.ring_file", name=name, version=version, platform=platform)
-    )
+@api.route("/ring/<string:name>/<string:version>/download")
+@api.route("/ring/<string:name>/<string:version>/<string:platform>/download")
+class RingDownloadResource(Resource):
+    def get(name, version, platform=""):
+        ring = Ring.get_or_none(
+            (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
+        )
+        if ring is None:
+            return {"message": "Ring not found."}, 404
 
+        return redirect(
+            url_for("fbp.ring_file", name=name, version=version, platform=platform)
+        )
 
-@apibp.route(
-    "/ring/<string:name>/<string:version>", defaults={"platform": ""}, methods=["POST"]
-)
-@apibp.route("/ring/<string:name>/<string:version>/<string:platform>", methods=["POST"])
-def ring_upload_api(name, version, platform):
-    ring = Ring.get_or_none(
-        (Ring.name == name) & (Ring.version == version) & (Ring.platform == platform)
-    )
-    if ring is not None:
-        print(f"{ring = }")
-        return {"message": "Ring exists."}, 400
-
-    # 檢查是否有檔案和 info 資料
-    if "file" not in request.files or "info" not in request.files:
-        return {"error": "Missing file or info data."}, 400
-
-    # 取得檔案和 info 資料
-    file = request.files["file"]
-    info = request.files["info"].read()
-
-    # 解析 info 資料
-    try:
-        info = json.loads(info)
-    except json.JSONDecodeError:
-        return {"error": "Invalid JSON format in info data."}, 400
-
-    # 取得 info 中的檔案名稱
-    file_name = info.get("file_name")
-
-    # 確認檔案名稱存在且非空
-    if not file_name:
-        return {"error": "File name missing in info data."}, 400
-
-    # 儲存檔案
-    file.save(RINGS_PATH / file_name)
-    add_ring(
-        name=name,
-        version=version,
-        platform=platform,
-        file_name=file_name,
-        author=info.get("author"),
-        author_email=info.get("author_email"),
-        require_dist=info.get("require_dist"),
-        requires_mojo=info.get("require_mojo"),  # TODO: rename require_mojo
-        sha256=calculate_sha256(RINGS_PATH / file_name),
-    )
-    # 回傳成功訊息
-    return {"message": "File uploaded successfully."}, 200
