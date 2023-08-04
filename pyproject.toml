@@ -35,6 +35,7 @@ dev = [
     "requests>=2.31.0",
     "requests-toolbelt>=1.0.0",
     "towncrier>=23.6.0",
+    "coverage>=7.2.7",
 ]
 
 [tool.towncrier]
