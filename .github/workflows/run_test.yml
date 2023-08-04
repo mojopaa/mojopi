@@ -26,6 +26,9 @@ jobs:
         continue-on-error: true  
       - name: Test with pytest  
         run: |  
+          pytest tests
+      - name: Coverage report  
+        run: |  
           coverage run -m pytest  -v -s  
       - name: Generate Coverage Report  
         run: |  
