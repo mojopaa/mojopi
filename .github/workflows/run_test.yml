@@ -20,10 +20,11 @@ jobs:
           python -m pip install --upgrade pdm  
           pdm install -d 
           pdm use -f /home/runner/work/mojopi/mojopi/.venv
+          cd ..
           git clone https://github.com/drunkwcodes/mups.git
           cd mups
           pdm install -d
-          cd ..
+          cd ../mojopi
       - name: Lint with Ruff  
         run: |  
           pip install ruff  

@@ -18,9 +18,9 @@ from flask import (
 )
 from flask_login import current_user, login_user, logout_user
 from flask_restx import Api, Resource, fields
-from mups import RingInfo
+from mups import ring_info
+from mups.core import RingInfo
 from peewee import DoesNotExist, IntegrityError, fn
-from serde import to_dict
 from werkzeug.utils import secure_filename
 
 from . import __version__
