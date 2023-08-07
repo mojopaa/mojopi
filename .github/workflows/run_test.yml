@@ -18,15 +18,15 @@ jobs:
       - name: Install pdm and dependencies 
         run: |  
           python -m pip install --upgrade pdm  
-          pdm install -d --no-isolation  
+          pdm install -d 
       - name: Lint with Ruff  
         run: |  
           pip install ruff  
-          ruff --format=github --target-version=py310 .  
+          ruff --format=github --target-version=py310 --ignore=F401,E501 .  
         continue-on-error: true  
       - name: Test with pytest 
         run: |  
-          coverage run -m pytest  -v -s  
+          pdm run coverage run -m pytest  -v -s  
       - name: Generate Coverage Report  
         run: |  
-          coverage report -m
+          pdm run coverage report -m

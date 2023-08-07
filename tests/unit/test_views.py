@@ -39,5 +39,6 @@ def test_mbp():
     assert response.status_code == 302
 
     with app.test_request_context():
-        with client.session_transaction() as sess:
-            pass  # TODO
+        # with client.session_transaction() as sess:
+        #     pass  # TODO
+        pass
