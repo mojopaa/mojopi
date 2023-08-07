@@ -18,11 +18,11 @@ jobs:
       - name: Install pdm and dependencies 
         run: |  
           python -m pip install --upgrade pdm  
-          pdm install -d 
-          pdm use -f /home/runner/work/mojopi/mojopi/.venv
+          pdm install -d
           cd ..
           git clone https://github.com/drunkwcodes/mups.git
           cd mups
+          pdm use -f /home/runner/work/mojopi/mojopi/.venv
           pdm install -d
           cd ../mojopi
       - name: Lint with Ruff  
