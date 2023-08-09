@@ -104,10 +104,10 @@ def verify_password(password, hashed_password):
     if hashed_password is None:
         hashed_password = ""
 
-    if type(password) is not bytes:
+    if not isinstance(password, bytes):
         password = password.encode("utf-8")
 
-    if type(hashed_password) is not bytes:
+    if not isinstance(hashed_password, bytes):
         hashed_password = hashed_password.encode("utf-8")
 
     return bcrypt.checkpw(password, hashed_password)

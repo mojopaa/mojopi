@@ -48,8 +48,10 @@ directory = "news"
 filename = "CHANGELOG.md"
 
 [tool.ruff]
-ignore = ["E712", "F401", "E501"]
+ignore = ["E712", "F401", "E501", "F403", "F405"]
 
 # E712 [*] Comparison to `True` should be `cond is True` or `if cond:`
 # F401 [*] `.core.is_valid_name` imported but unused
 # E501 Line too long (442 > 88 characters)
+# F403 `from peewee import *` used; unable to detect undefined names
+# F405 `Model` may be undefined, or defined from star imports

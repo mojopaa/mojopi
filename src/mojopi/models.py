@@ -285,7 +285,7 @@ def add_ring(
             raise InvalidInputError("Invalid author email")
         ring.author_email = author_email
     if require_dist:
-        if type(require_dist) is str:
+        if isinstance(require_dist, str):
             ring.requires_dist = require_dist
         else:
             ring.requires_dist = json.dumps(require_dist)
