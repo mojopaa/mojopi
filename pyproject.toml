@@ -17,6 +17,7 @@ dependencies = [
     "readme-renderer[md]>=40.0",
     "resolvelib>=1.0.1",
     "flask-restx>=1.1.0",
+    "jsonschema==4.17.3",  # https://github.com/python-restx/flask-restx/issues/553
 ]
 requires-python = ">=3.9"
 readme = "README.md"

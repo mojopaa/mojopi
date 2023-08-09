@@ -6,8 +6,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import peewee
 from flask_login import UserMixin
+from peewee import *
 from werkzeug.utils import secure_filename
 
 from mojopi.utils import (
@@ -26,22 +26,22 @@ from mojopi.utils import (
 )
 
 db_path = DPATH / "test.sqlite"
-db = peewee.SqliteDatabase(db_path, check_same_thread=False)
+db = SqliteDatabase(db_path, check_same_thread=False)
 
 
-class BaseModel(peewee.Model):
+class BaseModel(Model):
     class Meta:
         database = db
 
 
 class User(BaseModel, UserMixin):
-    username = peewee.CharField(
+    username = CharField(
         max_length=80, unique=True
     )  # will raise IntegrityError when username duplicated
-    email = peewee.CharField(max_length=120, unique=True)
-    password = peewee.CharField(max_length=60, null=True)
-    picture = peewee.CharField(max_length=120, null=True)
-    add_at = peewee.DateTimeField(default=datetime.now)
+    email = CharField(max_length=120, unique=True)
+    password = CharField(max_length=60, null=True)
+    picture = CharField(max_length=120, null=True)
+    add_at = DateTimeField(default=datetime.now)
 
     def __str__(self):
         return self.username
@@ -65,33 +65,33 @@ class User(BaseModel, UserMixin):
 class Profile(BaseModel):
     """1個 user 對應 1個 profile"""
 
-    user = peewee.ForeignKeyField(User, unique=True)
-    education = peewee.TextField(null=True)
-    experience = peewee.TextField(null=True)
-    bio = peewee.TextField(null=True)
-    is_public = peewee.BooleanField(default=True)
+    user = ForeignKeyField(User, unique=True)
+    education = TextField(null=True)
+    experience = TextField(null=True)
+    bio = TextField(null=True)
+    is_public = BooleanField(default=True)
 
 
 # refer to pypi, look at test/read_pypi_json.ipynb
 # info = dir(Ring) + dir(Project)
 class Ring(BaseModel):
-    name = peewee.CharField(max_length=50)
-    version = peewee.CharField(max_length=50, null=True)
-    platform = peewee.CharField(max_length=100, null=True)
-    author = peewee.CharField(max_length=50, null=True)
-    author_email = peewee.CharField(max_length=50, null=True)
-    requires_dist = peewee.TextField(null=True)
-    requires_mojo = peewee.CharField(max_length=20, null=True)
-    yanked = peewee.CharField(max_length=10, null=True)
-    yanked_reason = peewee.CharField(max_length=100, null=True)
-    file_name = peewee.CharField(max_length=100, null=True)
-    sha256 = peewee.CharField(max_length=64, null=True)
-    size = peewee.CharField(max_length=20, null=True)
-    upload_at = peewee.DateTimeField(default=datetime.now)
+    name = CharField(max_length=50)
+    version = CharField(max_length=50, null=True)
+    platform = CharField(max_length=100, null=True)
+    author = CharField(max_length=50, null=True)
+    author_email = CharField(max_length=50, null=True)
+    requires_dist = TextField(null=True)
+    requires_mojo = CharField(max_length=20, null=True)
+    yanked = CharField(max_length=10, null=True)
+    yanked_reason = CharField(max_length=100, null=True)
+    file_name = CharField(max_length=100, null=True)
+    sha256 = CharField(max_length=64, null=True)
+    size = CharField(max_length=20, null=True)
+    upload_at = DateTimeField(default=datetime.now)
 
     class Meta:
         database = db
-        primary_key = peewee.CompositeKey("name", "version", "platform")  # 設定聯合主鍵
+        primary_key = CompositeKey("name", "version", "platform")  # 設定聯合主鍵
 
     def __str__(self) -> str:
         return f"{self.name}-{self.version}"
@@ -99,23 +99,23 @@ class Ring(BaseModel):
 
 # 1 project to many rings
 class Project(BaseModel):
-    name = peewee.CharField(max_length=50)
-    version = peewee.CharField(max_length=50, null=True)
-    description = peewee.TextField(null=True)
+    name = CharField(max_length=50)
+    version = CharField(max_length=50, null=True)
+    description = TextField(null=True)
     # _valid_description_content_types = {"text/plain", "text/x-rst", "text/markdown"}
-    description_content_type = peewee.CharField(max_length=20, null=True)
-    home_page = peewee.CharField(max_length=100, null=True)
-    keywords = peewee.CharField(max_length=200, null=True)
-    license = peewee.TextField(null=True)
-    maintainer = peewee.CharField(max_length=50, null=True)
-    maintainer_email = peewee.CharField(max_length=50, null=True)
-    summary = peewee.CharField(max_length=100, null=True)
-    create_at = peewee.DateTimeField(default=datetime.now)
-    last_modified = peewee.DateTimeField(default=datetime.now)
+    description_content_type = CharField(max_length=20, null=True)
+    home_page = CharField(max_length=100, null=True)
+    keywords = CharField(max_length=200, null=True)
+    license = TextField(null=True)
+    maintainer = CharField(max_length=50, null=True)
+    maintainer_email = CharField(max_length=50, null=True)
+    summary = CharField(max_length=100, null=True)
+    create_at = DateTimeField(default=datetime.now)
+    last_modified = DateTimeField(default=datetime.now)
 
     class Meta:
         database = db
-        primary_key = peewee.CompositeKey("name", "version")  # 設定聯合主鍵
+        primary_key = CompositeKey("name", "version")  # 設定聯合主鍵
 
 
 def init_db(mock=MOCK_DB):
@@ -225,13 +225,13 @@ def add_user(email="", username="", password=""):
     hpw = hash_password(password)
 
     # https://stackoverflow.com/questions/49395393/return-max-value-in-a-column-with-peewee
-    max_user_id = User.select(peewee.fn.MAX(User.id)).scalar()
+    max_user_id = User.select(fn.MAX(User.id)).scalar()
     if not username:
         username = f"user{max_user_id + 1}"
     user = User(username=username, email=email, password=hpw)
     try:
         user.save()
-    except peewee.IntegrityError:
+    except IntegrityError:
         raise InvalidInputError(
             f"Used email or username. email: {email}, username: {username}"
         )
@@ -305,7 +305,7 @@ def add_ring(
 
     try:
         ring.save(force_insert=True)
-    except peewee.IntegrityError:
+    except IntegrityError:
         raise InvalidInputError("Duplicate ring.")
 
     if (
@@ -356,7 +356,7 @@ def add_project(
 
     try:
         pj.save(force_insert=True)
-    except peewee.IntegrityError as e:
+    except IntegrityError as e:
         if "project.name" in str(e):
             raise InvalidInputError(
                 f"Invalid project: {pj.name}-{pj.version}. It's duplicate."
