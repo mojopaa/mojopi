@@ -1,5 +1,8 @@
 # Mojo Package Index
 
+![](mojopi_logo.jpg)
+
+
 If something is not working for you, please check out [0.1.0](https://github.com/drunkwcodes/mojopi/tree/0.1.0) first for the smoothest experience.
 
 `git checkout 0.1.0`
