@@ -1,4 +1,4 @@
 src/mojopi/static/js/materialize.js -linguist-vendored
 src/mojopi/static/js/toastui-editor-all.js -linguist-vendored
 src/mojopi/static/js/toastui-editor-viewer.js -linguist-vendored
-src/mojopi/static/js/** -linguist-vendored
+src/mojopi/static/js/** linguist-vendored
