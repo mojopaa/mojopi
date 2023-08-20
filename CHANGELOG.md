@@ -1,3 +1,11 @@
+# MojoPI 0.2.1 (2023-08-20)
+
+### Bugfixes
+
+- Fix duplicates in search result. Now there are only latest version project with corresponding names. (ba0e2d31)
+- Use pdm's git dependecy and update REAME as well. (f553768b)
+
+
 # MojoPI 0.2.0 (2023-08-03)
 
 ### Features
