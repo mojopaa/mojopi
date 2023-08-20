@@ -9,18 +9,11 @@ If something is not working for you, please check out [0.1.0](https://github.com
 
 ### Installation and Usage
 
-The following steps will clone two projects and install them into the same `.venv`:
 
 - Use `pip install pdm`
-
 - `git clone git@github.com:drunkwcodes/mojopi.git`
-- `git clone git@github.com:drunkwcodes/mups.git`
 - `cd mojopi`
 - `pdm install -d`
-- `cd ../mups`
-- `pdm use -f /path/to/mojopi/.venv`
-- `pdm install`
-- cd back to mojopi `cd ../mojopi`
 
 - activate venv
 
