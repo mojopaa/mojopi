@@ -11,3 +11,4 @@
 - UI: Release version item cards exceeds Release History frame in mobile view.
 - UI: sha256 hash exceeds Download files frame in mobile view.
 - UI: the Release version items in Release History are too gray.
+- UI: Add sponsor logo footer like PyPI.
