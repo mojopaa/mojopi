@@ -21,7 +21,7 @@ If something is not working for you, please check out [0.1.0](https://github.com
     `.venv\Scripts\activate`
 
     Linux:
-    `.venv/bin/activate`
+    `. .venv/bin/activate`
 
 - `python src/mojopi/admin.py` to start server with admin mode.
 - Open web browser, open 127.0.0.1:5000
