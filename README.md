@@ -11,7 +11,7 @@ If something is not working for you, please check out [0.1.0](https://github.com
 
 
 - Use `pip install pdm`
-- `git clone git@github.com:drunkwcodes/mojopi.git`
+- `git clone git@github.com:mojopaa/mojopi.git`
 - `cd mojopi`
 - `pdm install -d`
 
